@@ -341,11 +341,13 @@ def _build_viewer_panel(
 
     rotate_ccw_button = QPushButton(tr('ccw rotate'))
     rotate_ccw_button.setObjectName('rotateCcwButton')
+    rotate_ccw_button.setToolTip(tr_verbatim('ccw rotate', context='tooltip'))
     if on_rotate_ccw is not None:
         rotate_ccw_button.clicked.connect(on_rotate_ccw)
 
     rotate_cw_button = QPushButton(tr('cw rotate'))
     rotate_cw_button.setObjectName('rotateCwButton')
+    rotate_cw_button.setToolTip(tr_verbatim('cw rotate', context='tooltip'))
     if on_rotate_cw is not None:
         rotate_cw_button.clicked.connect(on_rotate_cw)
 
@@ -369,6 +371,7 @@ def _build_viewer_panel(
 
     home_button = QPushButton(tr('reset view'))
     home_button.setObjectName('homeViewButton')
+    home_button.setToolTip(tr_verbatim('reset view', context='tooltip'))
     if on_home_view is not None:
         home_button.clicked.connect(on_home_view)
     row_height = int(SIZE_FOOTER_MIN_HEIGHT.removesuffix('px'))

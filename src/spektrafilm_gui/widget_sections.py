@@ -173,7 +173,7 @@ def _build_button(
     if role is not None:
         button.setProperty('role', role)
     if tooltip:
-        button.setToolTip(tooltip)
+        button.setToolTip(tr_verbatim(tooltip))
     button.clicked.connect(callback)
     return button
 
@@ -183,7 +183,7 @@ def _build_widget_label(section_name: str, field_name: str) -> QLabel:
     label_text = (spec.label if spec is not None else None) or _format_label(field_name)
     label = QLabel(tr(label_text))
     if spec is not None and spec.tooltip:
-        label.setToolTip(spec.tooltip)
+        label.setToolTip(tr_verbatim(spec.tooltip))
     return label
 
 
@@ -192,7 +192,7 @@ def _build_auxiliary_label(name: str) -> QLabel:
     label_text = (spec.label if spec is not None else None) or name.replace("_", " ")
     label = QLabel(tr(label_text))
     if spec is not None and spec.tooltip:
-        label.setToolTip(spec.tooltip)
+        label.setToolTip(tr_verbatim(spec.tooltip))
     return label
 
 
@@ -318,8 +318,8 @@ def _build_path_panel(
         editor = editors[spec.leaf]
         label = QLabel(tr(spec.label or _format_label(spec.leaf)))
         if spec.tooltip:
-            label.setToolTip(spec.tooltip)
-            editor.setToolTip(spec.tooltip)
+            label.setToolTip(tr_verbatim(spec.tooltip))
+            editor.setToolTip(tr_verbatim(spec.tooltip))
         form.addRow(label, editor)
     return _build_collapsible_form_section(title, form, expanded=expanded)
 
@@ -474,8 +474,8 @@ class ParamsGroupSection(QWidget):
             editor = self._editors[spec.leaf]
             label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
-                label.setToolTip(spec.tooltip)
-                editor.setToolTip(spec.tooltip)
+                label.setToolTip(tr_verbatim(spec.tooltip))
+                editor.setToolTip(tr_verbatim(spec.tooltip))
             form.addRow(label, editor)
 
         content = QWidget()
@@ -516,7 +516,7 @@ class SpecialSection(QWidget):
         borrowed = SIMULATION_SPECIAL_BORROWED_FIELDS[0]
         borrowed_label = QLabel(tr(borrowed.label or _format_label(borrowed.leaf)))
         if borrowed.tooltip:
-            borrowed_label.setToolTip(borrowed.tooltip)
+            borrowed_label.setToolTip(tr_verbatim(borrowed.tooltip))
         form.addRow(borrowed_label, simulation_section.print_illuminant)
         for spec in SPECIAL_FIELDS:
             editor = _editor_from_param_spec(_path_annotation(SpecialState, spec.path), spec, label=spec.path)
@@ -526,8 +526,8 @@ class SpecialSection(QWidget):
                 continue
             label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
-                label.setToolTip(spec.tooltip)
-                editor.setToolTip(spec.tooltip)
+                label.setToolTip(tr_verbatim(spec.tooltip))
+                editor.setToolTip(tr_verbatim(spec.tooltip))
             form.addRow(label, editor)
         self.setLayout(_build_collapsible_form_section('Experimental', form, expanded=False))
 
@@ -646,8 +646,8 @@ class DisplaySection(QWidget):
             setattr(self, spec.leaf, editor)
             label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
-                label.setToolTip(spec.tooltip)
-                editor.setToolTip(spec.tooltip)
+                label.setToolTip(tr_verbatim(spec.tooltip))
+                editor.setToolTip(tr_verbatim(spec.tooltip))
             widget: QWidget = editor
             if spec.leaf == 'preview_max_size':
                 widget = _build_vertical_container(_build_button_row(editor, self.update_preview_button, spacing=4), spacing=0)
@@ -698,7 +698,7 @@ class SimulationSection(QWidget):
         self.bottom_scan_for_print = BoolEditor()
         scan_for_print_spec = _AUXILIARY_FIELD_SPECS['scan_for_print']
         if scan_for_print_spec.tooltip:
-            self.bottom_scan_for_print.setToolTip(scan_for_print_spec.tooltip)
+            self.bottom_scan_for_print.setToolTip(tr_verbatim(scan_for_print_spec.tooltip))
         self.bottom_scan_for_print.toggled.connect(self._apply_scan_for_print_mode)
         preview_button_spec = _SIMULATION_ACTION_BUTTON_SPECS['preview']
         self.preview_button = _build_button(
