@@ -8,7 +8,9 @@ upstream fails here instead of quietly falling back to English at runtime.
 from __future__ import annotations
 
 import os
+import re
 import unittest
+from pathlib import Path
 
 from spektrafilm_gui import i18n
 from spektrafilm_gui.i18n_zh import ZH_UI
@@ -99,6 +101,19 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(editor.value, 'center_weighted')
         editor.value = 'spline36'
         self.assertEqual(editor.value, 'spline36')
+
+    def test_controller_status_templates_are_translated(self) -> None:
+        """Every runtime status template in the controller package must have a
+        catalog entry, so a rewording upstream fails this test instead of
+        silently showing English in the status bar."""
+        gui_dir = Path(__file__).resolve().parents[1] / 'src' / 'spektrafilm_gui'
+        keys = set()
+        for module in gui_dir.glob('controller*.py'):
+            source = module.read_text(encoding='utf-8')
+            for text in re.findall(r"tr_verbatim\((?:'([^'\\]*)'|\"([^\"\\]*)\")", source):
+                keys.add(text[0] or text[1])
+        missing = [key for key in sorted(keys) if _key(key) not in {_key(k) for k in ZH_UI}]
+        self.assertEqual(missing, [])
 
     def test_missing_entries_are_reported(self) -> None:
         i18n.tr('Some Unknown Label')
