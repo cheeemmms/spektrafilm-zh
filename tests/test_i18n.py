@@ -41,6 +41,24 @@ def _key(text: str) -> str:
     return ' '.join(text.split()).casefold()
 
 
+def _manifest_labels() -> tuple[str, ...]:
+    """Every label the manifests can put on screen, titles included."""
+    from spektrafilm_gui import param_manifest as pm
+
+    specs = [
+        *pm.INPUT_IMAGE_FIELDS,
+        *pm.SPECIAL_FIELDS,
+        *pm.DISPLAY_PANEL_FIELDS,
+        *pm.SIMULATION_FIELDS,
+    ]
+    for manifest in pm.ALL_MANIFESTS:
+        specs.extend(manifest.fields)
+
+    labels = [manifest.title for manifest in pm.ALL_MANIFESTS]
+    labels.extend(spec.label or spec.leaf.replace('_', ' ') for spec in specs)
+    return tuple(labels)
+
+
 class TranslationTests(unittest.TestCase):
     def setUp(self) -> None:
         i18n.set_language('zh')
@@ -52,6 +70,10 @@ class TranslationTests(unittest.TestCase):
     def test_shell_texts_are_translated(self) -> None:
         keys = {_key(key) for key in ZH_UI}
         self.assertEqual([text for text in SHELL_TEXTS if _key(text) not in keys], [])
+
+    def test_manifest_labels_are_translated(self) -> None:
+        keys = {_key(key) for key in ZH_UI}
+        self.assertEqual([text for text in _manifest_labels() if _key(text) not in keys], [])
 
     def test_translated_label_is_returned_untouched(self) -> None:
         self.assertEqual(i18n.tr('MAIN'), ZH_UI['MAIN'])

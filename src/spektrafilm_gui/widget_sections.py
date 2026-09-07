@@ -231,7 +231,7 @@ def _set_single_collapsible_layout(widget: QWidget, title: str, content: QWidget
 
 
 def _format_label(field_name: str) -> str:
-    return tr(field_name.replace("_", " "))
+    return field_name.replace("_", " ")
 
 
 def _apply_numeric_attr(widget: QWidget, method_name: str, value: float | int) -> None:
