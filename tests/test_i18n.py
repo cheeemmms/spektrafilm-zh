@@ -7,6 +7,7 @@ upstream fails here instead of quietly falling back to English at runtime.
 
 from __future__ import annotations
 
+import os
 import unittest
 
 from spektrafilm_gui import i18n
@@ -83,6 +84,21 @@ class TranslationTests(unittest.TestCase):
 
     def test_unknown_sentence_keeps_capitalisation(self) -> None:
         self.assertEqual(i18n.tr_verbatim('Some Unknown Sentence'), 'Some Unknown Sentence')
+
+    def test_enum_editor_shows_translation_and_stores_source_value(self) -> None:
+        os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+        from qtpy import QtWidgets
+
+        from spektrafilm_gui.widget_editors import EnumEditor
+
+        QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+        editor = EnumEditor(['center_weighted', 'spline36'])
+        self.assertEqual(editor.itemText(0), '中央重点测光 (center_weighted)')
+        self.assertEqual(editor.itemText(1), 'spline36')
+        editor.setCurrentIndex(0)
+        self.assertEqual(editor.value, 'center_weighted')
+        editor.value = 'spline36'
+        self.assertEqual(editor.value, 'spline36')
 
     def test_missing_entries_are_reported(self) -> None:
         i18n.tr('Some Unknown Label')

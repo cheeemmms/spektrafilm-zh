@@ -59,7 +59,7 @@ def _load_catalog() -> dict[str, str]:
     return _catalog
 
 
-def _lookup(text: str, context: str | None) -> str | None:
+def _lookup(text: str, context: str | None, report: bool) -> str | None:
     catalog = _load_catalog()
     if not catalog:
         return None
@@ -71,7 +71,7 @@ def _lookup(text: str, context: str | None) -> str | None:
             return scoped
 
     translated = catalog.get(key)
-    if translated is None:
+    if translated is None and report:
         _missing.add(key)
     return translated
 
@@ -86,13 +86,19 @@ def current_language() -> str:
     return _language
 
 
-def tr(text: str, *, context: str | None = None) -> str:
-    translated = _lookup(text, context)
+def tr(text: str, *, context: str | None = None, report: bool = True) -> str:
+    """Translate a short label.
+
+    ``report`` is off for values that are intentionally left in English, such
+    as product or algorithm names in a dropdown, so they do not pollute the
+    missing-entry report.
+    """
+    translated = _lookup(text, context, report)
     return translated if translated is not None else text.lower()
 
 
-def tr_verbatim(text: str, *, context: str | None = None) -> str:
-    translated = _lookup(text, context)
+def tr_verbatim(text: str, *, context: str | None = None, report: bool = True) -> str:
+    translated = _lookup(text, context, report)
     return translated if translated is not None else text
 
 

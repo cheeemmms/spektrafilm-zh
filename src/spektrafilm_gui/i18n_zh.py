@@ -316,4 +316,23 @@ ZH_UI: dict[str, str] = {
     'Run the full simulation on the full-resolution input': '以全分辨率输入运行完整模拟。',
     'Save the current output layer to an image file': '将当前输出图层保存为图像文件。',
     'Load and process a raw file using rawpy, output colorspace and cctf as defined in current input widget state': '使用 rawpy 读取并处理 RAW 文件，输出色彩空间与 CCTF 遵循当前输入控件的设置。',
+
+    # Dropdown options — scoped by "option" so they can never collide with a
+    # label. Product names, stock names, illuminant codes, colour spaces and
+    # algorithm names are deliberately absent and stay in English.
+    'option|center_weighted': '中央重点测光 (center_weighted)',
+    'option|matrix': '矩阵测光 (matrix)',
+    'option|multi_zone': '多区测光 (multi_zone)',
+    'option|partial': '局部测光 (partial)',
+    'option|highlight_weighted': '高光优先测光 (highlight_weighted)',
+    'option|median': '中值测光 (median)',
+    'option|average': '平均测光 (average)',
+    'option|as_shot': '相机原始设置 (as_shot)',
+    'option|daylight': '日光 (daylight)',
+    'option|tungsten': '钨丝灯 (tungsten)',
+    'option|custom': '自定义 (custom)',
+    'option|nearest': '最近邻 (nearest)',
+    'option|linear': '线性 (linear)',
+    'option|cubic': '三次 (cubic)',
+    'option|off': '关闭 (off)',
 }

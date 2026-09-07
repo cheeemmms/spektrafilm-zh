@@ -14,6 +14,7 @@ QStyledItemDelegate = QtWidgets.QStyledItemDelegate
 QStylePainter = QtWidgets.QStylePainter
 
 from spektrafilm.profiles.io import load_profile
+from spektrafilm_gui.i18n import tr_verbatim
 from spektrafilm_gui.theme_palette import (
     ACCENT_COLOR_TEXT,
     ACCENT_COLOR_TEXT_SECONDARY,
@@ -256,17 +257,27 @@ class BoolEditor(QtWidgets.QCheckBox):
 
 
 class EnumEditor(QtWidgets.QComboBox):
+    """Combo box that shows translated text but stores the source value.
+
+    The stored value is what gets persisted, so it must stay in the
+    enumeration's own spelling regardless of the display language.
+    """
+
     def __init__(self, values: list[str]):
         super().__init__()
-        self.addItems(values)
+        for value in values:
+            self.addItem(tr_verbatim(value, context='option', report=False), value)
 
     @property
     def value(self) -> str:
-        return self.currentText()
+        data = self.currentData()
+        return data if isinstance(data, str) else self.currentText()
 
     @value.setter
     def value(self, value: str) -> None:
-        index = self.findText(value)
+        index = self.findData(value)
+        if index < 0:
+            index = self.findText(value)
         if index >= 0:
             self.setCurrentIndex(index)
         else:
