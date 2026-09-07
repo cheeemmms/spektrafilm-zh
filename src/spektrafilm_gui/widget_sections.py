@@ -51,7 +51,8 @@ from spektrafilm_gui.persistence import load_dialog_dir, save_dialog_dir
 from spektrafilm_gui.theme_palette import SIZE_FOOTER_ITEM_SPACING
 from spektrafilm_gui.options import RawWhiteBalance
 from spektrafilm_gui.widget_editors import BoolEditor, EnumEditor, FloatEditor, FloatTupleEditor, IntEditor, IntTupleEditor, ProfileEnumEditor
-from spektrafilm_gui.widget_primitives import CollapsibleSection, normalize_ui_text as _normalize_ui_text
+from spektrafilm_gui.i18n import tr, tr_verbatim
+from spektrafilm_gui.widget_primitives import CollapsibleSection
 
 
 LOAD_RAW_FIELDS = (
@@ -145,7 +146,7 @@ def _new_form_layout() -> QFormLayout:
 def _add_form_rows(form: QFormLayout, rows: list[tuple[str | QLabel, QWidget]]) -> None:
     for label, widget in rows:
         if isinstance(label, str):
-            label = _normalize_ui_text(label)
+            label = tr(label)
         form.addRow(label, widget)
 
 
@@ -168,7 +169,7 @@ def _build_button(
     preserve_case: bool = False,
     role: str | None = None,
 ) -> QPushButton:
-    button = QPushButton(text if preserve_case else _normalize_ui_text(text))
+    button = QPushButton(tr_verbatim(text) if preserve_case else tr(text))
     if role is not None:
         button.setProperty('role', role)
     if tooltip:
@@ -180,7 +181,7 @@ def _build_button(
 def _build_widget_label(section_name: str, field_name: str) -> QLabel:
     spec = _field_spec(section_name, field_name)
     label_text = (spec.label if spec is not None else None) or _format_label(field_name)
-    label = QLabel(_normalize_ui_text(label_text))
+    label = QLabel(tr(label_text))
     if spec is not None and spec.tooltip:
         label.setToolTip(spec.tooltip)
     return label
@@ -189,7 +190,7 @@ def _build_widget_label(section_name: str, field_name: str) -> QLabel:
 def _build_auxiliary_label(name: str) -> QLabel:
     spec = _AUXILIARY_FIELD_SPECS.get(name)
     label_text = (spec.label if spec is not None else None) or name.replace("_", " ")
-    label = QLabel(_normalize_ui_text(label_text))
+    label = QLabel(tr(label_text))
     if spec is not None and spec.tooltip:
         label.setToolTip(spec.tooltip)
     return label
@@ -225,12 +226,12 @@ def _set_single_collapsible_layout(widget: QWidget, title: str, content: QWidget
     root = QVBoxLayout()
     root.setContentsMargins(0, 0, 0, 0)
     root.setSpacing(0)
-    root.addWidget(CollapsibleSection(_normalize_ui_text(title), content, expanded=expanded))
+    root.addWidget(CollapsibleSection(title, content, expanded=expanded))
     widget.setLayout(root)
 
 
 def _format_label(field_name: str) -> str:
-    return _normalize_ui_text(field_name.replace("_", " "))
+    return tr(field_name.replace("_", " "))
 
 
 def _apply_numeric_attr(widget: QWidget, method_name: str, value: float | int) -> None:
@@ -315,7 +316,7 @@ def _build_path_panel(
     form = _new_form_layout()
     for spec in specs:
         editor = editors[spec.leaf]
-        label = QLabel(_normalize_ui_text(spec.label or _format_label(spec.leaf)))
+        label = QLabel(tr(spec.label or _format_label(spec.leaf)))
         if spec.tooltip:
             label.setToolTip(spec.tooltip)
             editor.setToolTip(spec.tooltip)
@@ -371,7 +372,7 @@ class LoadRawSection(QWidget):
         self._source: LoadRawState | None = None
         self.file_path = QLineEdit()
         self.file_path.setReadOnly(True)
-        self.file_path.setPlaceholderText(_normalize_ui_text('No raw selected'))
+        self.file_path.setPlaceholderText(tr('No raw selected'))
         self.reprocess_button = _build_button('reprocess raw', self._reprocess_raw, role='compactAction')
         self.reprocess_button.setEnabled(False)
         self._build_ui()
@@ -397,7 +398,7 @@ class LoadRawSection(QWidget):
         self.setLayout(_build_collapsible_form_section(self.TITLE, form, expanded=False))
 
     def _choose_file(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, _normalize_ui_text('Select input raw'), load_dialog_dir('raw_input'))
+        path, _ = QFileDialog.getOpenFileName(self, tr('Select input raw'), load_dialog_dir('raw_input'))
         if not path:
             return
         save_dialog_dir('raw_input', str(Path(path).parent))
@@ -471,7 +472,7 @@ class ParamsGroupSection(QWidget):
         # any remaining fields are displayed by a section that borrows them.
         for spec in self._manifest.panel_fields or self._manifest.fields:
             editor = self._editors[spec.leaf]
-            label = QLabel(_normalize_ui_text(spec.label or _format_label(spec.leaf)))
+            label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
                 label.setToolTip(spec.tooltip)
                 editor.setToolTip(spec.tooltip)
@@ -513,7 +514,7 @@ class SpecialSection(QWidget):
         self._editors: dict[str, QWidget] = {}
         form = _new_form_layout()
         borrowed = SIMULATION_SPECIAL_BORROWED_FIELDS[0]
-        borrowed_label = QLabel(_normalize_ui_text(borrowed.label or _format_label(borrowed.leaf)))
+        borrowed_label = QLabel(tr(borrowed.label or _format_label(borrowed.leaf)))
         if borrowed.tooltip:
             borrowed_label.setToolTip(borrowed.tooltip)
         form.addRow(borrowed_label, simulation_section.print_illuminant)
@@ -523,7 +524,7 @@ class SpecialSection(QWidget):
             setattr(self, spec.leaf, editor)
             if spec.leaf == 'film_gamma_factor':
                 continue
-            label = QLabel(_normalize_ui_text(spec.label or _format_label(spec.leaf)))
+            label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
                 label.setToolTip(spec.tooltip)
                 editor.setToolTip(spec.tooltip)
@@ -571,14 +572,14 @@ class FilePickerSection(QWidget):
     def _build_ui(self) -> None:
         self.file_path = QLineEdit()
         self.file_path.setReadOnly(True)
-        self.file_path.setPlaceholderText(_normalize_ui_text('No image selected'))
+        self.file_path.setPlaceholderText(tr('No image selected'))
 
         browse_button = _build_button('Select file', self._choose_file, role='compactAction')
         content = _build_vertical_container(_build_button_row(self.file_path, browse_button, spacing=4), spacing=6)
         _set_single_collapsible_layout(self, 'Import RGB', content, expanded=False)
 
     def _choose_file(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, _normalize_ui_text('Select input image'), load_dialog_dir('rgb_input'))
+        path, _ = QFileDialog.getOpenFileName(self, tr('Select input image'), load_dialog_dir('rgb_input'))
         if not path:
             return
         save_dialog_dir('rgb_input', str(Path(path).parent))
@@ -643,7 +644,7 @@ class DisplaySection(QWidget):
             editor = _editor_from_param_spec(_path_annotation(DisplayState, spec.path), spec, label=spec.path)
             self._editors[spec.leaf] = editor
             setattr(self, spec.leaf, editor)
-            label = QLabel(_normalize_ui_text(spec.label or _format_label(spec.leaf)))
+            label = QLabel(tr(spec.label or _format_label(spec.leaf)))
             if spec.tooltip:
                 label.setToolTip(spec.tooltip)
                 editor.setToolTip(spec.tooltip)
