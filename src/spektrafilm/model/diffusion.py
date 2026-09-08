@@ -600,14 +600,21 @@ def apply_diffusion_filter_um(image, diffusion_filter, pixel_size_um):
     )
 
     padded = np.pad(image, ((radius, radius), (radius, radius), (0, 0)), mode='reflect')
-    blurred = np.empty_like(padded)
+    # Convolve per channel and write straight into an image-sized buffer
+    # (not a padded-sized one): each fftconvolve returns the padded-frame
+    # result, so slice out the valid interior on assignment. This keeps the
+    # second full-frame buffer at (H, W) instead of (H+2r, W+2r).
+    blurred = np.empty_like(image)
     for channel in range(image.shape[2]):
         blurred[:, :, channel] = fftconvolve(
             padded[:, :, channel], psf_per_channel[..., channel], mode='same',
-        )
-    blurred = blurred[radius:-radius, radius:-radius, :]
+        )[radius:-radius, radius:-radius]
 
-    return (1.0 - p_s) * image + p_s * blurred
+    # Blend in place to avoid materialising separate (1-p_s)*image and
+    # p_s*blurred temporaries at the same time.
+    result = (1.0 - p_s) * image
+    result += p_s * blurred
+    return result
 
 
 
