@@ -39,6 +39,11 @@ OUTPUT_LAYER_ANIMATION_INTERVAL_MS = 32
 OUTPUT_LAYER_CROSSFADE_FRAMES = 10
 OUTPUT_LAYER_ANIMATION_MAX_PIXELS = 1_500_000
 WATERMARK_LONG_EDGE_PIXELS = 1024
+# The white border is a solid fill, so it only needs a 2x2 raster: the
+# world-space geometry in `_set_layer_geometry` stretches it over the full
+# padded frame. Keeping it at full source resolution would hold an extra
+# (H, W, 3) float32 buffer just to render a constant colour.
+WHITE_BORDER_RASTER_SIZE = 2
 
 
 def virtual_photo_paper_back(*args, **kwargs):
@@ -314,7 +319,7 @@ class ViewerLayerService:
             self.hide_layer(OUTPUT_LAYER_NAME)
 
         white_border = self._set_or_add_image_layer(
-            np.ones((*image_data.shape[:2], 3), dtype=np.float32),
+            np.ones((WHITE_BORDER_RASTER_SIZE, WHITE_BORDER_RASTER_SIZE, 3), dtype=np.float32),
             layer_name=WHITE_BORDER_LAYER_NAME,
         )
         _set_layer_geometry(white_border, world_size=border_world_size)

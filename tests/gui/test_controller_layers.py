@@ -166,7 +166,10 @@ def test_set_or_add_input_preview_layer_creates_fixed_layers_with_shared_world_f
     assert watermark_layer.data.shape == (1024, 512, 3)
     assert watermark_layer.interpolation2d == 'spline36'
     assert preview_layer.scale == (0.5, 0.5)
-    assert white_border.scale == (0.75, 1.0)
+    # white_border now uses a fixed 2x2 raster stretched over the padded
+    # world frame (it is a solid fill), so its scale is the padded world
+    # size divided by 2 rather than by the source resolution.
+    assert white_border.scale == (0.75, 0.5)
 
 
 def test_repeated_input_preview_updates_skip_stack_reorder() -> None:
