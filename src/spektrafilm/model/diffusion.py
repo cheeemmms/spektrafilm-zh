@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.ndimage
 from spektrafilm.utils.fast_gaussian_filter import fast_exponential_filter, fast_gaussian_filter
 from spektrafilm.utils.numba_boost_hightlights import boost_highlights
 
@@ -99,34 +98,6 @@ def apply_gaussian_blur_um(data, sigma_um, pixel_size_um):
     if sigma > 0:
         return fast_gaussian_filter(data, sigma)
     return data
-
-def apply_diffusion_filter_mm(data, diffusion_filter_params, pixel_size_um):
-    diffusion_fraction, sigma_mm, iterations, growth, decay = diffusion_filter_params
-    iterations = int(iterations)
-    sigma = sigma_mm * 1000 / pixel_size_um
-    if sigma_mm <= 0 or sigma <= 0 or diffusion_fraction <= 0 or iterations <= 0:
-        return data
-    
-    max_sigma = sigma * (growth ** max(iterations - 1, 0))
-    image_size = min(data.shape[:2])
-    if max_sigma > image_size / 6:
-        print(f"Warning: diffusion filter size {max_sigma:.1f} pixels is too large for the image size {image_size}. Capping it to {image_size / 6:.1f} pixels.")
-        max_sigma = image_size / 6
-    
-    radius = max(int(np.ceil(max_sigma * 3)), 0)
-    result = np.pad(data, ((radius, radius), (radius, radius), (0, 0)), mode='reflect') if radius > 0 else data.copy()
-    result_fft = np.fft.fft2(result, axes=(0, 1))
-    for _ in range(iterations):
-        blurred_fft = scipy.ndimage.fourier_gaussian(result_fft, sigma=(sigma, sigma, 0))
-        result_fft = diffusion_fraction * blurred_fft + (1 - diffusion_fraction) * result_fft
-        sigma *= growth
-        diffusion_fraction *= decay
-    result = np.fft.ifft2(result_fft, axes=(0, 1)).real
-
-    if radius > 0:
-        return result[radius:-radius, radius:-radius, :]
-    return result
-
 
 from scipy.signal import fftconvolve
 
