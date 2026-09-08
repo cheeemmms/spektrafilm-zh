@@ -1,5 +1,19 @@
 ![spektrafilm banner](img/readme/banner.jpg)
 
+> [!IMPORTANT]
+>
+> **简体中文界面汉化分支（Unofficial Simplified-Chinese localization branch）**
+>
+> 本仓库 `cheeemmms/spektrafilm-zh` 是上游项目
+> [andreavolpato/spektrafilm](https://github.com/andreavolpato/spektrafilm) 的**非官方汉化分支**，
+> 仅对桌面 GUI 的界面文案做了简体中文翻译，**不修改任何图像处理、色彩科学或模拟逻辑**。
+>
+> - **分支结构**：`main` 与上游代码完全一致（镜像）；`zh-cn` 为汉化主线（也是本仓库默认分支）。
+> - **中英切换**：默认中文。启动前设置环境变量 `SPEKTRAFILM_LANG=en` 即显示英文原界面。
+> - **版权**：本项目版权归原作者 [Andrea Volpato](https://github.com/andreavolpato) 所有，汉化作者并未参与原项目开发；本项目沿用上游 `GPLv3` 许可。
+> - 完整汉化说明见 [简体中文使用说明](README.zh-CN.md)。
+> - 上游作者的动态请认准 [上游仓库](https://github.com/andreavolpato/spektrafilm)，勿在此分支反馈原项目问题。
+
 > [!WARNING]
 >
 > **I love building spektrafilm**, and I invested already hundreds of hours in it. Right now it’s a nights-and-weekends project. If it will help pay some bills, I can keep improving it for everyone. 🙂 Any **support** is really appreciated: [Buy me a coffee](https://buymeacoffee.com/andreavolpato)
